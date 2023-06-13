@@ -9,8 +9,8 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
   <style>
     #container {
-      width: 400px;
-      height: 300px;
+      width: 15em;
+      height: 15em;
       position: relative;
     }
   </style>
@@ -18,36 +18,35 @@
 
 <body>
   <div class="container ">
-    <div class="row">
-      <div class="col-6 square-box d-flex justify-content-end align-items-center">
-        <!-- <img class="img-fluid" style="max-width: 45%;" id="picture">
-        <img src="{{ url_for('static', filename='images/original/' + 'original.png') }}" alt="Uploaded Image"> -->
+    <div class="row my-2">
+      <div class="col-lg-4 col-sm-6 justify-content-end align-items-center">
+        <img class="img-fluid" style="max-width: 100%; margin-bottom: 1em;" id="picture" src="{{ url_for('static', filename='images/original/' + 'original.png') }}" alt="Uploaded Image">
+      </div>
+      <div class="col-lg-4 col-sm-6 d-flex justify-content-center align-items-center">
         <form method="POST" enctype="multipart/form-data">
-          <div class="drop-zone">
-            <span class="drop-zone__prompt">Drop file here or click to upload</span>
-            <input type="file" name="image" class="drop-zone__input">
+          <div id="drop_area" style="padding:5em; border: 1px solid black; width: 18em; height:18em">
+            Drag and drop your files here to upload.
           </div>
+          <div id="upload_progress"></div>
+          <div id="speed"></div>
         </form>
       </div>
-      <div class="col-6 square-box d-flex justify-content-start align-items-center ">
+      <div class="col-lg-4 col-sm-6 square-box d-flex align-items-center">
         <!-- 3D VIEW HERE -->
         <div id="container"></div>
       </div>
     </div>
+    
     <div class="row">
       {% for img in imagelist %}
-      <div class="col-3 square-box d-flex justify-content-center align-items-center">
-        <img class="img-fluid" style="max-width: 80%;" id="picture"
+      <div class="col-lg-3 col-md-6 d-flex justify-content-center">
+        <img class="" style="width: 13em; margin: 0.2em;" id="picture"
           src="{{ url_for('static', filename='images/pbr/' +img) }}" alt="Image">
       </div>
       {% endfor %}
     </div>
 
-    <div class="row">
-      <!-- <div class="col-4 square-box d-flex justify-content-end align-items-center">
-          <input type="file" id="selectedFile" style="display: none;" name="image" />
-          <input class="btn btn-primary" type="submit" value="Upload" onclick="document.getElementById('selectedFile').click();" />
-      </div> -->
+    <div class="row my-4">
       <div class="col-6 square-box d-flex justify-content-end align-items-center ">
         <button class="btn btn-primary" type="submit">Download</button>
       </div>
@@ -60,6 +59,5 @@
 </body>
 <!-- <script type="module" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script> -->
 <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
-<script src="https://cdn.jsdelivr.net/npm/browser-polyfill@3.20.2/polyfills/localStorage/polyfill.min.js"></script>
 
 </html>
