@@ -9,8 +9,8 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
   <style>
     #container {
-      width: 15em;
-      height: 15em;
+      width: 20em;
+      height: 20em;
       position: relative;
     }
   </style>
@@ -20,13 +20,15 @@
   <div class="container ">
     <div class="row my-2">
       <div class="col-lg-4 col-sm-6 justify-content-end align-items-center">
-        <img class="img-fluid" style="max-width: 100%; margin-bottom: 1em;" id="picture" src="{{ url_for('static', filename='images/original/' + 'original.png') }}" alt="Uploaded Image">
+        <!-- <img class="img-fluid" style="max-width: 100%; margin-bottom: 1em;" id="picture" src="{{ url_for('static', filename='images/original/' + 'original.png') }}" alt="Uploaded Image"> -->
+        <img class="img-fluid" style="max-width: 100%; margin-bottom: 1em;" id="picture" src="{{ url_for('static', filename='images/temp/' + 'seamless.png') }}" alt="Uploaded Image">
       </div>
       <div class="col-lg-4 col-sm-6 d-flex justify-content-center align-items-center">
         <form method="POST" enctype="multipart/form-data">
           <div id="drop_area" style="padding:5em; border: 1px solid black; width: 18em; height:18em">
-            Drag and drop your files here to upload.
+            <p id="drop_text">Drag and drop your files here to upload.</p>
           </div>
+          <input type="file" accept="image/*" id="fileInput" style="display: none;">
           <div id="upload_progress"></div>
           <div id="speed"></div>
         </form>
@@ -59,5 +61,6 @@
 </body>
 <!-- <script type="module" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script> -->
 <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/viewport.js') }}"></script>
 
 </html>

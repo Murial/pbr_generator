@@ -1,68 +1,3 @@
-import * as THREE from 'https://cdn.skypack.dev/three@0.132.2';
-
-var container = document.getElementById('container');
-var renderer = new THREE.WebGLRenderer();
-
-// Set the background color to grey
-renderer.setClearColor(0x888888);
-
-function getWidth() {
-    return parseInt(window.getComputedStyle(canvas).width);
-}
-  
-function getHeight() {
-    return parseInt(window.getComputedStyle(canvas).height);
-}
-
-// Set the size of the renderer to match the container
-renderer.setSize(container.offsetWidth, container.offsetHeight);
-renderer.setPixelRatio(window.devicePixelRatio);
-container.appendChild(renderer.domElement);
-
-//make it responsive (dynamic size)
-// window.addEventListener('resize', function()
-// {
-// 	var width = window.innerWidth;
-// 	var height = window.innerHeight;
-// 	renderer.setSize(width,height);
-// 	camera.aspect = width/height;
-// 	camera.updateProjectionMatrix();
-// });
-
-addEventListener("resize",() => {
-    camera.aspect = getWidth() / getHeight();
-    camera.updateProjectionMatrix();
-
-    renderer.setSize(window.innerWidth, window.innerHeight);
-},false);
-
-var scene = new THREE.Scene();
-
-const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-const cube = new THREE.Mesh( geometry, material );
-scene.add( cube );
-
-var camera = new THREE.PerspectiveCamera(45, container.offsetWidth / container.offsetHeight, 0.1, 1000);
-camera.position.z = 5;
-
-// Add your scene objects, lights, etc.
-
-// Render the scene
-renderer.render(scene, camera);
-
-
-function animate() {
-	requestAnimationFrame( animate );
-
-	cube.rotation.x += 0.01;
-	cube.rotation.y += 0.01;
-
-	renderer.render( scene, camera );
-}
-
-animate();
-
 // ----------------------------------UPLOAD SECTION----------------------------
 
 // prevent the default behavior of web browser
@@ -82,7 +17,7 @@ drop_area.addEventListener('drop', function (e) {
 
     // we use XMLHttpRequest here instead of fetch, because with the former we can easily implement progress and speed.
     var xhr = new XMLHttpRequest();
-    xhr.open('post', '/upload', true); // aussume that the url /upload handles uploading.
+    xhr.open('post', '/upload', true); // aussume that the urDl /upload handles uploading.
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status == 200) {
             // uploading is successful
@@ -93,7 +28,7 @@ drop_area.addEventListener('drop', function (e) {
 
     // show uploading progress
     var lastTime = Date.now();
-    var lastLoad = 0; 
+    var lastLoad = 0;
     xhr.upload.onprogress = function (event) {
         if (event.lengthComputable) {
             // update progress
@@ -120,6 +55,56 @@ drop_area.addEventListener('drop', function (e) {
     xhr.send(fd);
 }, false);
 
+// -----------------------------CLICKABLE DIV-----------------------------
+// Get references to the clickable div and file input element
+var clickableDiv = document.getElementById('drop_area');
+var fileInput = document.getElementById('fileInput');
+
+// Add a click event listener to the clickable div
+clickableDiv.addEventListener('click', function (e) {
+    // Trigger the click event on the file input element
+    fileInput.click();
+});
+  
+document.getElementById('fileInput').addEventListener('change', function(event) {
+var selectedImage = document.getElementById('picture');
+// var files = event.target.files[0];
+var files = fileInput.files;
+
+for (var i = 0; i < files.length; i++) {
+    var file = files[i];
+    console.log('File name:', file.name);
+    console.log('File type:', file.type);
+    console.log('File size:', file.size);
+  }
+
+// Send the FormData object to the Flask backend using an AJAX request
+var xhr = new XMLHttpRequest();
+xhr.open('POST', '/upload', true);
+xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+        // Request completed successfully
+        alert('Successfully uploaded!');  // please replace with your own logic
+        reloadImage()
+    }
+};
+
+// send files to server
+xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+var fd = new FormData();
+for (let file of files) {
+    fd.append('image', file);
+}
+xhr.send(fd);
+
+// Create a FileReader object to read the selected file
+var reader = new FileReader();
+reader.onload = function() {
+    selectedImage.src = reader.result;
+};
+reader.readAsDataURL(file);
+});
+  
 
 // -----------------------------refresh certain content---------------
 
