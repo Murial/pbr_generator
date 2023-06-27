@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, request, flash, redirect, session
+from flask import Flask, jsonify, render_template, request, flash, redirect, session, send_from_directory
 from werkzeug.utils import secure_filename
 from PIL import Image, ImageDraw
 import numpy as np
@@ -18,7 +18,8 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/', methods=['POST', 'GET'])
 def main():
-    return render_template('index.html', imagelist=imagelist)
+    image_json = jsonify(imagelist)
+    return render_template('index.html', imagelist=imagelist, image_json=image_json)
 
 @app.route('/upload', methods=['POST', 'GET'])
 def upload():
@@ -87,8 +88,6 @@ def combine_images_h(imgs):
 def four_stack(img):
     row = combine_images_w([img, img])
     return combine_images_h([row, row])
-
-
 
 def circle_mask(img):
     """Roll the images 50% vertical and horz and mask the new center for in-fill"""
