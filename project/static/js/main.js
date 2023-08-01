@@ -88,7 +88,7 @@ xhr.onreadystatechange = function () {
         reloadImage()
     }
 };
-
+ 
 // send files to server
 xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 var fd = new FormData();
@@ -104,17 +104,13 @@ reader.onload = function() {
 };
 reader.readAsDataURL(file);
 });
-  
 
 // -----------------------------refresh certain content---------------
-
 function reloadImage() {
-    var imageElement = document.getElementById('picture');
-
-    // Add a timestamp query parameter to the image URL to force reload
-    // var timestamp = new Date().getTime();
-    var imageUrl = imageElement.src + '?t=';
-
-    // Set the updated URL to the image element
-    imageElement.src = imageUrl;
+    var img_url = $("#picture").attr("src");
+    $("#picture").attr("src", img_url + `?v=${new Date().getTime()}`);
 }
+
+// -----------------------------download feature-------------------------
+
+

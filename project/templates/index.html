@@ -1,70 +1,209 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Image</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/bootstrap.css') }}" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/main.css') }}" />
+    <style>
+      body {
+        background-color: rgba(0, 0, 0, 0.8);
+        background-blend-mode: multiply;
+        background-image: url({{url_for("static", filename= "images/temp/seamless.png")}});
+        background-repeat: repeat;
+        background-size: contain;
+      }
+      #container {
+        width: 20em;
+        height: 20em;
+        position: relative;
+      }
+    </style>
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Test Image</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-  <style>
-    #container {
-      width: 20em;
-      height: 20em;
-      position: relative;
+  <body class="container-fluid">
+    <div class="container">
+      <div class="row my-2">
+        <div class="col-lg-4 col-sm-6 justify-content-end align-items-center">
+          <!-- <img class="img-fluid" style="max-width: 100%; margin-bottom: 1em;" id="picture" src="{{ url_for('static', filename='images/original/' + 'original.png') }}" alt="Uploaded Image"> -->
+          <img
+            class="img-fluid"
+            style="max-width: 100%; margin-bottom: 1em"
+            id="picture"
+            src="{{ url_for('static', filename='images/temp/' + 'seamless.png') }}"
+            alt="Uploaded Image" />
+        </div>
+        <div
+          class="col-lg-4 col-sm-6 d-flex justify-content-center align-items-center">
+          <!-- <form method="POST" enctype="multipart/form-data"> -->
+            <div
+              id="drop_area"
+              style="
+                padding: 5em;
+                border: 1px solid black;
+                width: 18em;
+                height: 18em;
+              ">
+              <p id="drop_text">Drag and drop your files here to upload.</p>
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              id="fileInput"
+              style="display: none" />
+            <div id="upload_progress"></div>
+            <div id="speed"></div>
+          </form>
+        </div>
+        <div class="col-lg-4 col-sm-6 square-box d-flex align-items-center">
+          <!-- 3D VIEW HERE -->
+          <div id="container"></div>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="col-lg-3 col-md-6 d-flex justify-content-center">
+          <img
+            class=""
+            style="width: 13em; margin: 0.2em"
+            id="albedo"
+            src="{{ url_for('static', filename='images/pbr/' + 'albedo.png') }}"
+            alt="Image" />
+        </div>
+        <div class="col-lg-3 col-md-6 d-flex justify-content-center">
+          <img
+            class=""
+            style="width: 13em; margin: 0.2em"
+            id="height"
+            src="{{ url_for('static', filename='images/pbr/' + 'height.png') }}"
+            alt="Image" />
+        </div>
+        <div class="col-lg-3 col-md-6 d-flex justify-content-center">
+          <img
+            class=""
+            style="width: 13em; margin: 0.2em"
+            id="normal"
+            src="{{ url_for('static', filename='images/pbr/' + 'normal.png') }}"
+            alt="Image" />
+        </div>
+        <div class="col-lg-3 col-md-6 d-flex justify-content-center">
+          <img
+            class=""
+            style="width: 13em; margin: 0.2em"
+            id="roughness"
+            src="{{ url_for('static', filename='images/pbr/' + 'roughness.png') }}"
+            alt="Image" />
+        </div>
+      </div>
+
+      <div class="row my-4">
+        <div
+          class="col-6 square-box d-flex justify-content-end align-items-center">
+          <button
+            id="download"
+            class="btn btn-primary"
+            onclick="downloadImages()">
+            Download
+          </button>
+        </div>
+        <div
+          class="col-6 square-box d-flex justify-content-start align-items-center">
+          <button
+            onclick="refreshTextures()"
+            class="btn btn-primary"
+            id="generate">
+            Generate
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+  <!-- <script type="module" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script> -->
+  <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script type="module" src="{{ url_for('static', filename='js/viewport.js') }}"></script>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.5.0/jszip.min.js"></script>
+
+  <script type="text/javascript">
+    function refreshTextures() {
+      albedo = document.getElementById("albedo");
+      albedo.src =
+        "{{ url_for('static', filename='images/pbr/' + 'albedo.png') }}?rand_number=" +
+        Math.random();
+
+      height = document.getElementById("height");
+      height.src =
+        "{{ url_for('static', filename='images/pbr/' + 'height.png') }}?rand_number=" +
+        Math.random();
+
+      normal = document.getElementById("normal");
+      normal.src =
+        "{{ url_for('static', filename='images/pbr/' + 'normal.png') }}?rand_number=" +
+        Math.random();
+
+      roughness = document.getElementById("roughness");
+      roughness.src =
+        "{{ url_for('static', filename='images/pbr/' + 'roughness.png') }}?rand_number=" +
+        Math.random();
+
+      location.reload();
     }
-  </style>
-</head>
 
-<body>
-  <div class="container ">
-    <div class="row my-2">
-      <div class="col-lg-4 col-sm-6 justify-content-end align-items-center">
-        <!-- <img class="img-fluid" style="max-width: 100%; margin-bottom: 1em;" id="picture" src="{{ url_for('static', filename='images/original/' + 'original.png') }}" alt="Uploaded Image"> -->
-        <img class="img-fluid" style="max-width: 100%; margin-bottom: 1em;" id="picture" src="{{ url_for('static', filename='images/temp/' + 'seamless.png') }}" alt="Uploaded Image">
-      </div>
-      <div class="col-lg-4 col-sm-6 d-flex justify-content-center align-items-center">
-        <form method="POST" enctype="multipart/form-data">
-          <div id="drop_area" style="padding:5em; border: 1px solid black; width: 18em; height:18em">
-            <p id="drop_text">Drag and drop your files here to upload.</p>
-          </div>
-          <input type="file" accept="image/*" id="fileInput" style="display: none;">
-          <div id="upload_progress"></div>
-          <div id="speed"></div>
-        </form>
-      </div>
-      <div class="col-lg-4 col-sm-6 square-box d-flex align-items-center">
-        <!-- 3D VIEW HERE -->
-        <div id="container"></div>
-      </div>
-    </div>
-    
-    <div class="row">
-      {% for img in imagelist %}
-      <div class="col-lg-3 col-md-6 d-flex justify-content-center">
-        <img class="" style="width: 13em; margin: 0.2em;" id="picture"
-          src="{{ url_for('static', filename='images/pbr/' +img) }}" alt="Image">
-      </div>
-      {% endfor %}
-    </div>
+    // $(document).ready(function () {
+    //   $("#generate").click(function () {
+    //     // $("#container").load(location.href+" #container>*","#container");
+    //     location.reload();
+    //   });
+    // });
 
-    <div class="row my-4">
-      <div class="col-6 square-box d-flex justify-content-end align-items-center ">
-        <button class="btn btn-primary" type="submit">Download</button>
-      </div>
-      <div class="col-6 square-box d-flex justify-content-start align-items-center ">
-        <button class="btn btn-primary" type="submit">Generate</button>
-      </div>
-    </div>
-  </div>
+    function downloadImages() {
+      // List of image URLs
+      var imageUrls = [
+          "{{ url_for('static', filename='images/pbr/' + 'albedo.png') }}",
+          "{{ url_for('static', filename='images/pbr/' + 'height.png') }}",
+          "{{ url_for('static', filename='images/pbr/' + 'normal.png') }}",
+          "{{ url_for('static', filename='images/pbr/' + 'roughness.png') }}"
+      ];
+      var imageName = ['albedo', 'height', 'normal', 'roughness'];
 
-</body>
-<!-- <script type="module" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script> -->
-<script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
-<script type="module" src="{{ url_for('static', filename='js/viewport.js') }}"></script>
-<script type="module" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-<!-- Import maps polyfill -->
-<!-- Remove this when import maps will be widely supported -->
-<script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+      // Create a new instance of JSZip
+      var zip = new JSZip();
 
+      // Use Promise.all to fetch all images asynchronously
+      Promise.all(imageUrls.map(url => fetch(url)))
+          .then(responses => {
+              // Process the image responses
+              return Promise.all(responses.map(response => response.blob()));
+          })
+          .then(blobs => {
+              // Add each image to the ZIP file
+              blobs.forEach((blob, index) => {
+                  zip.file((imageName[index])+ '.png', blob);
+              });
+
+              // Generate the ZIP file
+              return zip.generateAsync({ type: 'blob' });
+          })
+          .then(zipBlob => {
+              // Create a temporary anchor element
+              var anchor = document.createElement('a');
+              anchor.href = URL.createObjectURL(zipBlob);
+              anchor.download = 'PBR Textures.zip';
+
+              // Trigger the download
+              anchor.click();
+
+              // Clean up the temporary anchor element
+              URL.revokeObjectURL(anchor.href);
+          })
+          .catch(error => {
+              console.error('Error:', error);
+          });
+    }
+  </script>
 </html>
