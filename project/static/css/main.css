@@ -2,12 +2,9 @@ body {
   width: 100vw;
   height: 100vh;
   margin: 0vh;    
-  
-  /* to prevent scrollable page to keep it clean*/
-  /* overflow: hidden; */ 
   }
 
-#drop_area{
+/* #drop_area{
   background-color:#fff;
   transition: 0.5s;
   color:#000;
@@ -17,4 +14,4 @@ body {
   background-color:#002ead;
   transition: 0.5s;
   color:#fff;
-}
+} */

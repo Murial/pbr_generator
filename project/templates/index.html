@@ -12,55 +12,72 @@
       href="{{ url_for('static', filename='css/main.css') }}" />
     <style>
       body {
+        justify-content: center;
+        align-items: center;
+        padding: 2em;
         background-color: rgba(0, 0, 0, 0.8);
         background-blend-mode: multiply;
-        background-image: url({{url_for("static", filename= "images/temp/seamless.png")}});
+        background-image: url(../static/images/temp/seamless.png);
         background-repeat: repeat;
         background-size: contain;
       }
+
       #container {
-        width: 20em;
-        height: 20em;
+        width: 18em;
+        height: 18em;
         position: relative;
+      }
+
+      .original{
+        width: 18em;
+        height: 18em;
+      }
+
+      .original:hover{
+        filter: sepia(100%) saturate(0%) brightness(50%) hue-rotate(180deg);
+        border: 0.2em;
+        border-color: blue;
+        border-style: solid;
+        transition: 0.1s;
+      }
+
+      .center-text-container{
+        position: relative;
+        text-align: center;
+        color: white;
+      }
+
+      .centered {
+        font-weight: bold;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: none;
+      }
+
+      .centered:hover {
+        transition: 0.5s;
+        color: white;
+        display: block;
       }
     </style>
   </head>
-
+    
   <body class="container-fluid">
     <div class="container">
       <div class="row my-2">
-        <div class="col-lg-4 col-sm-6 justify-content-end align-items-center">
-          <!-- <img class="img-fluid" style="max-width: 100%; margin-bottom: 1em;" id="picture" src="{{ url_for('static', filename='images/original/' + 'original.png') }}" alt="Uploaded Image"> -->
-          <img
-            class="img-fluid"
-            style="max-width: 100%; margin-bottom: 1em"
-            id="picture"
-            src="{{ url_for('static', filename='images/temp/' + 'seamless.png') }}"
-            alt="Uploaded Image" />
+        <div class="center-text-container col-lg-6 col-sm-6">
+          <div class="centered">UPLOAD IMAGE</div>
+          <img class="original" id="drop_area" src="{{ url_for('static', filename='images/temp/' + 'seamless.png') }}" alt="Uploaded Image"/>
+          <!-- <div id="drop_area" class="" style="border: 1px solid black; width: 18em; height: 18em;"> -->
+            <!-- <p id="drop_text">Drag and drop your files here to upload.</p> -->
+            <input type="file" accept="image/*" id="fileInput" style="display: none" />
+          <!-- </div> -->
         </div>
-        <div
-          class="col-lg-4 col-sm-6 d-flex justify-content-center align-items-center">
-          <!-- <form method="POST" enctype="multipart/form-data"> -->
-            <div
-              id="drop_area"
-              style="
-                padding: 5em;
-                border: 1px solid black;
-                width: 18em;
-                height: 18em;
-              ">
-              <p id="drop_text">Drag and drop your files here to upload.</p>
-            </div>
-            <input
-              type="file"
-              accept="image/*"
-              id="fileInput"
-              style="display: none" />
-            <div id="upload_progress"></div>
-            <div id="speed"></div>
-          </form>
-        </div>
-        <div class="col-lg-4 col-sm-6 square-box d-flex align-items-center">
+            <!-- <div id="upload_progress"></div>
+            <div id="speed"></div> -->
+        <div class="col-lg-6 col-sm-6 square-box d-flex">
           <!-- 3D VIEW HERE -->
           <div id="container"></div>
         </div>
@@ -81,7 +98,7 @@
             style="width: 13em; margin: 0.2em"
             id="height"
             src="{{ url_for('static', filename='images/pbr/' + 'height.png') }}"
-            alt="Image" />
+            alt="Image"/>
         </div>
         <div class="col-lg-3 col-md-6 d-flex justify-content-center">
           <img
@@ -123,7 +140,7 @@
       </div>
     </div>
   </body>
-  <!-- <script type="module" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script> -->
+
   <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
   <script type="module" src="{{ url_for('static', filename='js/viewport.js') }}"></script>
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
@@ -153,13 +170,6 @@
 
       location.reload();
     }
-
-    // $(document).ready(function () {
-    //   $("#generate").click(function () {
-    //     // $("#container").load(location.href+" #container>*","#container");
-    //     location.reload();
-    //   });
-    // });
 
     function downloadImages() {
       // List of image URLs

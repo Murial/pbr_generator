@@ -14,9 +14,8 @@ document.body.appendChild(renderer.domElement);
 const params = {
     displacementScale: 0.2,
     normalScale : 0.7,
-    reflectivity: 0,
-    roughness : 3,
-    shininess : 0,
+    reflectivity: 0.2,
+    roughness : 4,
     exposure : 1,
     tilingX : 1,
     tilingY : 1
@@ -100,7 +99,7 @@ normalTexture.repeat.set( params.tilingX, params.tilingY );
 roughnessTexture.repeat.set( params.tilingX, params.tilingY );
 
 //mesh setting
-const geometry = new THREE.SphereGeometry(1.8, 128, 128);
+const geometry = new THREE.SphereGeometry(1.8, 256, 256);
 
 var ballMat = new THREE.MeshPhysicalMaterial({
     //load albedo texture
@@ -121,7 +120,6 @@ var ballMat = new THREE.MeshPhysicalMaterial({
 
     //specular settings
     reflectivity : params.reflectivity,
-    shininess : params.shininess,
 });
 
 const sphere = new THREE.Mesh( geometry, ballMat );
@@ -135,7 +133,7 @@ const controls = new OrbitControls( camera, renderer.domElement );
 controls.update();
 
 //---------------------------------LIGHTING SECTION-------------------------------------
-const hemiLight = new THREE.HemisphereLight(0xffeeb1, 0x080820, 0.3);
+const hemiLight = new THREE.HemisphereLight(0xffeeb1, 0x080820, 0.1);
 scene.add(hemiLight);
 
 const spotLight = new THREE.SpotLight(0xffa95c,0.5);
@@ -178,7 +176,6 @@ function animate() {
     sphere.material.displacementScale = params.displacementScale;
     sphere.material.roughness = params.roughness;
     sphere.material.reflectivity = params.reflectivity;
-    sphere.material.shininess = params.shininess;
     renderer.toneMappingExposure = params.exposure;
 
     //TEXTURE TILING UPDATE
@@ -196,15 +193,14 @@ function animate() {
 
 // GUI Controller section
 const gui = new GUI();
-gui.add( sphere.material.normalScale,'x', 0, 1, 0.01 ).name("normal X");
-gui.add( sphere.material.normalScale,'y', 0, 1, 0.01 ).name("normal Y");
+gui.add( sphere.material.normalScale,'x', 0, 1, 0.001 ).name("normal X");
+gui.add( sphere.material.normalScale,'y', 0, 1, 0.001 ).name("normal Y");
 gui.add( params, 'tilingX', 1, 10, 1 );
 gui.add( params, 'tilingY', 1, 10, 1 );
 gui.add( params, 'displacementScale', 0, 1, 0.01 );
 gui.add( params, 'exposure', 0, 2, 0.01 );
-gui.add( params, 'roughness', 0, 5, 0.1 );
-gui.add( params, 'reflectivity', 0, 2, 0.1 );
-gui.add( params, 'shininess', 0, 2, 0.1 );
+gui.add( params, 'roughness', 0, 5, 0.01 );
+gui.add( params, 'reflectivity', 0, 2, 0.01 );
 gui.open();
 
 animate();

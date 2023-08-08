@@ -2,10 +2,6 @@ from sys import displayhook
 from PIL import Image, ImageDraw
 from flask import app
 import numpy as np
-
-import cv2
-import imghdr
-import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 
 def view_seamless():
@@ -13,10 +9,9 @@ def view_seamless():
     crop_image = image_crop(ori_image)
     rolled_img = roll_img(crop_image)
 
-    mask = gen_mask(rolled_img)
-    seamless = gen_seamless(rolled_img, crop_image)
+    gen_mask(rolled_img)
+    gen_seamless(rolled_img, crop_image)
 
-    return seamless
 
 # -------------------------------1st STEP-----------------------------------------
 # REWRITE IMAGE AS A PNG WITH RGBA COLOR SPACE
@@ -77,16 +72,16 @@ def gen_mask(img):
     return mask
 
 def gen_seamless(rolled, cropped):
-    img = rolled
-    bg = cropped
+    bg = rolled
+    fg = cropped
 
-    mask = gen_mask(img)
+    mask = gen_mask(bg)
 
     mask_blur = mask.filter(ImageFilter.GaussianBlur(15))
-    mask_blur.save('project/static/images/original/mask.png', quality=95)
+    mask_blur.save('project/static/images/original/mask.png')
 
-    seamless = img.copy()
-    seamless.paste(bg, (0, 0), mask_blur)
-    seamless.save('project/static/images/temp/seamless.png', quality=95)
+    seamless = bg.copy()
+    seamless.paste(fg, (0, 0), mask_blur)
+    seamless.save('project/static/images/temp/seamless.png')
 
     return seamless

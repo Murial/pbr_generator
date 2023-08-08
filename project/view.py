@@ -31,7 +31,6 @@ def upload():
     file.save(os.path.join(UPLOAD_FOLDER, 'original.png'))  # replace FILES_DIR with your own directory
     image_filename = os.path.join(UPLOAD_FOLDER, 'original.png')
 
-    view_seamless()
     gen_pbr()
 
     return render_template('index.html', image_filename=image_filename)

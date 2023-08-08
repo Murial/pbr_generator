@@ -1,26 +1,39 @@
-from PIL import Image, ImageDraw
+from PIL import Image, ImageOps
+from blend_modes import soft_light
 import numpy as np
 import cv2
 
+from preprocessing import *
+
 def gen_pbr():
-    img = Image.open('project/static/images/temp/seamless.png')
-    albedo = gen_albedo(img)
-    albedo_path = 'project/static/images/pbr/albedo.png'
-    height = gen_height(albedo_path, 31)
+    view_seamless()
+    gen_albedo()
+    gen_height()
     height_path = 'project/static/images/pbr/height.png'
     normal = generate_normal_map(height_path, strength=1)
-    roughness = generate_roughness(normal)
+    generate_roughness(normal)
 
 #--------------------------------4th STEP-----------------------------------------
 # GENERATE ALBEDO MAP FROM SEAMLESS 
-def gen_albedo(img):
-    im_crop = img.convert(mode='RGB')
+def gen_albedo():    
+    im_crop = Image.open('project/static/images/temp/seamless.png').convert(mode='RGB')
 
-    # Convert the image to grayscale
-    im_gray_crop = Image.new("RGB", im_crop.size, (127,127,127))
+    invert = ImageOps.invert(im_crop)
+    invert.save("project/static/images/temp/invert.png")
 
-    # Blend the original image with the grayscale image to get albedo map
-    im_albedo = Image.blend(im_crop, im_gray_crop, 0.3)
+    # Import background image
+    bg = Image.open('project/static/images/temp/seamless.png').convert(mode='RGBA')  # RGBA image
+    bg = np.array(bg)  # Inputs to blend_modes need to be numpy arrays.
+    bg = bg.astype(float)  # Inputs to blend_modes need to be floats.
+
+    # Import foreground image
+    fg = Image.open('project/static/images/temp/invert.png').convert(mode='RGBA')  # RGBA image
+    fg = np.array(fg)  # Inputs to blend_modes need to be numpy arrays.
+    fg = fg.astype(float)  # Inputs to blend_modes need to be floats.
+
+    im_albedo = soft_light(bg, fg, 1)
+    im_albedo = np.uint8(im_albedo) 
+    im_albedo = Image.fromarray(im_albedo)
 
     # Save the albedo map as a new image
     im_albedo.save("project/static/images/pbr/albedo.png")
@@ -38,24 +51,6 @@ def gammaCorrection(image, gamma):
 
     return cv2.LUT(img, table)
 
-def gen_height(albedo_path, k):
-    img = cv2.imread(albedo_path)
-
-    # applying gaussian blur
-    ksize = k
-    gauss = cv2.GaussianBlur(img, (ksize,ksize), 0)
-
-    # call addWeighted function. use beta = 0 to effectively only operate one one image
-    height_map = cv2.addWeighted( img, 0.1, gauss, 0.9, 2)
-
-    height_map = gammaCorrection(img, 0.5) # source | gamma
-    height_map = adjust_contrast_brightness(img, 2, 50) # source | clip limit | clahe value
-    height_map = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-    cv2.imwrite("project/static/images/pbr/height.png",height_map)
-
-    return height_map
-
 def adjust_contrast_brightness(image, clipL, cValue):
     # Load the image
     img = image
@@ -68,6 +63,25 @@ def adjust_contrast_brightness(image, clipL, cValue):
     adjusted_image = cv2.cvtColor(image_yuv, cv2.COLOR_YUV2BGR)
 
     return adjusted_image
+
+def height(img, k):
+    # applying gaussian blur
+    ksize = k
+    gauss = cv2.GaussianBlur(img, (k,k), 0)
+
+    # call addWeighted function. use beta = 0 to effectively only operate one one image
+    height_map = cv2.addWeighted( img, 0.1, gauss, 0.9, 2)
+
+    return height_map
+
+def gen_height():
+    albedo = cv2.imread("project/static/images/pbr/albedo.png")
+    height_map = height(albedo, 13) # source | kernel size
+    # height_map = gammaCorrection(height_map, 0.5) # source | gamma
+    height_map = adjust_contrast_brightness(height_map, 2, 50) # source | clip limit | clahe value
+    height_map = cv2.cvtColor(height_map, cv2.COLOR_BGR2GRAY)
+
+    cv2.imwrite("project/static/images/pbr/height.png",height_map)
 
 #--------------------------------6th STEP-----------------------------------------
 # GENERATE NORMAL MAP FROM HEIGHT
@@ -102,7 +116,6 @@ def generate_normal_map(image_path, strength=1.0):
     gradient_x, gradient_y, gradient_z = np.gradient(normal_map)
     gradient_magnitude = np.sqrt(gradient_z**2 + gradient_x**2 + gradient_y**2)
 
-    xn,yn,zn = cv2.split(normal_map)
     xg,yg,zg = cv2.split(gradient_magnitude)
     xg = np.uint8(63 * xg / xg.max()) #BLUE
     yg = np.uint8(255 * yg / yg.max())  #GREEN
@@ -113,9 +126,9 @@ def generate_normal_map(image_path, strength=1.0):
     zg = cv2.bitwise_not(zg)
 
     # to flip R and G channel, turn off for directX normal map
-    temp = yg
-    yg = zg
-    zg = temp
+    # temp = yg
+    # yg = zg
+    # zg = temp
 
     normal_map = np.dstack([xg, yg, zg])
     
