@@ -28,12 +28,12 @@
         position: relative;
       }
 
-      .original{
+      .original {
         width: 18em;
         height: 18em;
       }
 
-      .original:hover{
+      .original:hover {
         filter: sepia(100%) saturate(0%) brightness(50%) hue-rotate(180deg);
         border: 0.2em;
         border-color: blue;
@@ -41,7 +41,7 @@
         transition: 0.1s;
       }
 
-      .center-text-container{
+      .center-text-container {
         position: relative;
         text-align: center;
         color: white;
@@ -61,30 +61,68 @@
         color: white;
         display: block;
       }
+
+      .imgHolder {
+        position: relative;
+      }
+      .imgHolder span {
+        text-shadow: 0px 0px 10px black;
+        font-weight: bold;
+        font-size: 0.9em;
+        position: absolute;
+        align-items: center;
+        top: 0.5em;
+        color: white;
+      }
+      .upload-text {
+        position: relative;
+      }
+      .upload-text span {
+        text-shadow: 0px 0px 10px black;
+        font-weight: bold;
+        font-size: 1.5em;
+        text-align: center;
+        position: absolute;
+        top: 4.5em;
+        left: 8.5em;
+        opacity: 20%;
+        color: white;
+      }
     </style>
   </head>
-    
+
   <body class="container-fluid">
     <div class="container">
       <div class="row my-2">
         <div class="center-text-container col-lg-6 col-sm-6">
-          <div class="centered">UPLOAD IMAGE</div>
-          <img class="original" id="drop_area" src="{{ url_for('static', filename='images/temp/' + 'seamless.png') }}" alt="Uploaded Image"/>
+          <div class="upload-text">
+            <span>CLICK HERE <p>TO UPLOAD</p> </span>
+            <img
+              class="original"
+              id="drop_area"
+              src="{{ url_for('static', filename='images/temp/' + 'seamless.png') }}"
+              alt="Uploaded Image" />
+          </div>
           <!-- <div id="drop_area" class="" style="border: 1px solid black; width: 18em; height: 18em;"> -->
-            <!-- <p id="drop_text">Drag and drop your files here to upload.</p> -->
-            <input type="file" accept="image/*" id="fileInput" style="display: none" />
+          <!-- <p id="drop_text">Drag and drop your files here to upload.</p> -->
+          <input
+            type="file"
+            accept="image/*"
+            id="fileInput"
+            style="display: none" />
           <!-- </div> -->
         </div>
-            <!-- <div id="upload_progress"></div>
+        <!-- <div id="upload_progress"></div>
             <div id="speed"></div> -->
         <div class="col-lg-6 col-sm-6 square-box d-flex">
           <!-- 3D VIEW HERE -->
           <div id="container"></div>
         </div>
       </div>
-      
+
       <div class="row">
-        <div class="col-lg-3 col-md-6 d-flex justify-content-center">
+        <div class="col-lg-3 col-md-6 d-flex justify-content-center imgHolder">
+          <span>ALBEDO MAP</span>
           <img
             class=""
             style="width: 13em; margin: 0.2em"
@@ -92,15 +130,17 @@
             src="{{ url_for('static', filename='images/pbr/' + 'albedo.png') }}"
             alt="Image" />
         </div>
-        <div class="col-lg-3 col-md-6 d-flex justify-content-center">
+        <div class="col-lg-3 col-md-6 d-flex justify-content-center imgHolder">
+          <span>HEIGHT MAP</span>
           <img
             class=""
             style="width: 13em; margin: 0.2em"
             id="height"
             src="{{ url_for('static', filename='images/pbr/' + 'height.png') }}"
-            alt="Image"/>
+            alt="Image" />
         </div>
-        <div class="col-lg-3 col-md-6 d-flex justify-content-center">
+        <div class="col-lg-3 col-md-6 d-flex justify-content-center imgHolder">
+          <span>NORMAL MAP</span>
           <img
             class=""
             style="width: 13em; margin: 0.2em"
@@ -108,7 +148,8 @@
             src="{{ url_for('static', filename='images/pbr/' + 'normal.png') }}"
             alt="Image" />
         </div>
-        <div class="col-lg-3 col-md-6 d-flex justify-content-center">
+        <div class="col-lg-3 col-md-6 d-flex justify-content-center imgHolder">
+          <span>ROUGHNESS MAP</span>
           <img
             class=""
             style="width: 13em; margin: 0.2em"
@@ -141,9 +182,15 @@
     </div>
   </body>
 
-  <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
-  <script type="module" src="{{ url_for('static', filename='js/viewport.js') }}"></script>
-  <script type="module" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+  <script
+    type="module"
+    src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script
+    type="module"
+    src="{{ url_for('static', filename='js/viewport.js') }}"></script>
+  <script
+    type="module"
+    src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.5.0/jszip.min.js"></script>
 
   <script type="text/javascript">
@@ -174,46 +221,46 @@
     function downloadImages() {
       // List of image URLs
       var imageUrls = [
-          "{{ url_for('static', filename='images/pbr/' + 'albedo.png') }}",
-          "{{ url_for('static', filename='images/pbr/' + 'height.png') }}",
-          "{{ url_for('static', filename='images/pbr/' + 'normal.png') }}",
-          "{{ url_for('static', filename='images/pbr/' + 'roughness.png') }}"
+        "{{ url_for('static', filename='images/pbr/' + 'albedo.png') }}",
+        "{{ url_for('static', filename='images/pbr/' + 'height.png') }}",
+        "{{ url_for('static', filename='images/pbr/' + 'normal.png') }}",
+        "{{ url_for('static', filename='images/pbr/' + 'roughness.png') }}",
       ];
-      var imageName = ['albedo', 'height', 'normal', 'roughness'];
+      var imageName = ["albedo", "height", "normal", "roughness"];
 
       // Create a new instance of JSZip
       var zip = new JSZip();
 
       // Use Promise.all to fetch all images asynchronously
-      Promise.all(imageUrls.map(url => fetch(url)))
-          .then(responses => {
-              // Process the image responses
-              return Promise.all(responses.map(response => response.blob()));
-          })
-          .then(blobs => {
-              // Add each image to the ZIP file
-              blobs.forEach((blob, index) => {
-                  zip.file((imageName[index])+ '.png', blob);
-              });
-
-              // Generate the ZIP file
-              return zip.generateAsync({ type: 'blob' });
-          })
-          .then(zipBlob => {
-              // Create a temporary anchor element
-              var anchor = document.createElement('a');
-              anchor.href = URL.createObjectURL(zipBlob);
-              anchor.download = 'PBR Textures.zip';
-
-              // Trigger the download
-              anchor.click();
-
-              // Clean up the temporary anchor element
-              URL.revokeObjectURL(anchor.href);
-          })
-          .catch(error => {
-              console.error('Error:', error);
+      Promise.all(imageUrls.map((url) => fetch(url)))
+        .then((responses) => {
+          // Process the image responses
+          return Promise.all(responses.map((response) => response.blob()));
+        })
+        .then((blobs) => {
+          // Add each image to the ZIP file
+          blobs.forEach((blob, index) => {
+            zip.file(imageName[index] + ".png", blob);
           });
+
+          // Generate the ZIP file
+          return zip.generateAsync({ type: "blob" });
+        })
+        .then((zipBlob) => {
+          // Create a temporary anchor element
+          var anchor = document.createElement("a");
+          anchor.href = URL.createObjectURL(zipBlob);
+          anchor.download = "PBR Textures.zip";
+
+          // Trigger the download
+          anchor.click();
+
+          // Clean up the temporary anchor element
+          URL.revokeObjectURL(anchor.href);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
     }
   </script>
 </html>

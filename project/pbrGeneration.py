@@ -77,7 +77,7 @@ def height(img, k):
 def gen_height():
     albedo = cv2.imread("project/static/images/pbr/albedo.png")
     height_map = height(albedo, 13) # source | kernel size
-    # height_map = gammaCorrection(height_map, 0.5) # source | gamma
+    height_map = gammaCorrection(height_map, 0.5) # source | gamma
     height_map = adjust_contrast_brightness(height_map, 2, 50) # source | clip limit | clahe value
     height_map = cv2.cvtColor(height_map, cv2.COLOR_BGR2GRAY)
 
@@ -86,55 +86,33 @@ def gen_height():
 #--------------------------------6th STEP-----------------------------------------
 # GENERATE NORMAL MAP FROM HEIGHT
 def generate_normal_map(image_path, strength=1.0):
-    # Load the image
-    image = cv2.imread(image_path)
+    image = cv2.imread(image_path) # Load the image    
+    gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY) # Convert the image to grayscale
+    gradient_x = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=3) # Calculate x gradient using Sobel operator
+    gradient_y = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=3) # Calculate y gradient using Sobel operator
+    gradient_x = cv2.normalize(gradient_x, None, alpha=-1, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F) # Normalize x gradient values
+    gradient_y = cv2.normalize(gradient_y, None, alpha=-1, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F) # Normalize y gradient values
+    gradient_z = np.ones_like(gradient_x) * strength # Calculate the Z component of the normal vector
+    normal_map = np.dstack((gradient_x, gradient_y, gradient_z)) # Combine the gradients to generate the normal map
+    normal_map = cv2.normalize(normal_map, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U) # Normalize the range 0-255
+    normal_map = np.float32(normal_map) # Convert the image to float32 format for better precision in the gradients
 
-    # Convert the image to grayscale
-    gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-
-    # Calculate the gradient using Sobel operator
-    gradient_x = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=3)
-    gradient_y = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=3)
-
-    # Normalize the gradient values
-    gradient_x = cv2.normalize(gradient_x, None, alpha=-1, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
-    gradient_y = cv2.normalize(gradient_y, None, alpha=-1, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
-
-    # Calculate the Z component of the normal vector
-    gradient_z = np.ones_like(gradient_x) * strength
-
-    # Combine the gradients to generate the normal map
-    normal_map = np.dstack((gradient_x, gradient_y, gradient_z))
-
-    # Normalize the normal map to the range [0, 255]
-    normal_map = cv2.normalize(normal_map, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
-
-    # Convert the image to float32 format for better precision in the gradients
-    normal_map = np.float32(normal_map)
-
-    # Calculate the 3D gradient magnitude using numpy's gradient function
-    gradient_x, gradient_y, gradient_z = np.gradient(normal_map)
+    gradient_x, gradient_y, gradient_z = np.gradient(normal_map) # Calculate the 3D gradient magnitude using numpy's gradient function
     gradient_magnitude = np.sqrt(gradient_z**2 + gradient_x**2 + gradient_y**2)
 
     xg,yg,zg = cv2.split(gradient_magnitude)
-    xg = np.uint8(63 * xg / xg.max()) #BLUE
-    yg = np.uint8(255 * yg / yg.max())  #GREEN
+    xg = np.uint8(63 * xg / xg.max())   #BLUE 
+    yg = np.uint8(255 * yg / yg.max())  #GREEN 
     zg = np.uint8(255 * zg / zg.max())  #RED
-
     xg = cv2.bitwise_not(xg)
     yg = cv2.bitwise_not(yg)
     zg = cv2.bitwise_not(zg)
 
-    # to flip R and G channel, turn off for directX normal map
-    # temp = yg
-    # yg = zg
-    # zg = temp
-
     normal_map = np.dstack([xg, yg, zg])
-    
     cv2.imwrite("project/static/images/pbr/normal.png",normal_map)
 
     return normal_map
+
 #--------------------------------7th STEP-----------------------------------------
 # GENERATE ROUGHNESS MAP FROM NORMAL
 
